@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Tarefas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+    <aside>
+        <div class="brand"><span class="logo" id="logo"></span>Tarefas</div>
+        <nav id="nav"></nav>
+        <div class="conn" id="conn"><i></i><span>Conectando…</span></div>
+    </aside>
+    <main>
+        <header>
+            <div><h1 id="title">Todas as tarefas</h1><p id="sub"></p></div>
+            <button class="btn pri" id="new"></button>
+        </header>
+        <div class="tools">
+            <div class="search"><span id="sico"></span><input id="q" type="search" placeholder="Buscar por nome" aria-label="Buscar tarefas"><kbd>/</kbd></div>
+            <select id="sort" aria-label="Ordenar por">
+                <option value="venc">Vencimento mais próximo</option>
+                <option value="nome">Nome (A–Z)</option>
+                <option value="novas">Criadas recentemente</option>
+            </select>
+        </div>
+        <div class="card"><ul id="list"></ul><div class="foot" id="foot" hidden></div></div>
+    </main>
+</div>
+
+<dialog id="dlg">
+    <form id="f" novalidate>
+        <h2 id="dt">Nova tarefa</h2>
+        <label for="nome">Nome <small id="cnt">0/60</small></label>
+        <input class="in" id="nome" maxlength="60" autocomplete="off">
+        <div class="err" id="e-nome"></div>
+        <label for="data">Data de vencimento</label>
+        <input class="in" id="data" type="date">
+        <div class="err" id="e-data"></div>
+        <div class="btns"><button type="button" class="btn" id="cancel">Cancelar</button><button class="btn pri" id="save">Salvar tarefa</button></div>
+    </form>
+</dialog>
+
+<dialog id="cdlg">
+    <h2>Excluir tarefa?</h2>
+    <p id="ctext"></p>
+    <div class="btns"><button class="btn" id="ccancel">Cancelar</button><button class="btn dng" id="cok">Excluir</button></div>
+</dialog>
+<div id="toast" role="status"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
