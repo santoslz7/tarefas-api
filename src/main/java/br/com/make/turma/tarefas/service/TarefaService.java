@@ -33,10 +33,8 @@ public class TarefaService {
 
     public Tarefa consultar(Long id) {
 
-        var tarefa = tarefaRepository.findById(id);
-        if (tarefa == null) {
-            throw new TarefaNaoEncontradaException("Tarefa");
-        }
+        var tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new TarefaNaoEncontradaException("Tarefa"));
 
         return tarefa;
     }
@@ -54,10 +52,8 @@ public class TarefaService {
 
     public Tarefa alterar(Long id, AlterarTarefaDTO alterarTarefaDTO) {
 
-        var tarefa = tarefaRepository.findById(id);
-        if (tarefa == null) {
-            throw new TarefaNaoEncontradaException("Tarefa");
-        }
+        var tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new TarefaNaoEncontradaException("Tarefa"));
 
         if (alterarTarefaDTO.dataVencimento().isBefore(tarefa.getDataVencimento())) {
             throw new ValidacaoException("Data de vencimento deve ser igual ou maior que a data de vencimento atual da Tarefa");
@@ -66,15 +62,13 @@ public class TarefaService {
         tarefa.setNome(alterarTarefaDTO.nome());
         tarefa.setDataVencimento(alterarTarefaDTO.dataVencimento());
         tarefa.setDataAtualizacao(LocalDateTime.now());
-        return tarefa;
+        return tarefaRepository.save(tarefa);
     }
 
     public void excluir(Long id) {
 
-        var tarefa = tarefaRepository.findById(id);
-        if (tarefa == null) {
-            throw new TarefaNaoEncontradaException("Tarefa");
-        }
+        var tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new TarefaNaoEncontradaException("Tarefa"));
 
         if (tarefa.getStatus() == CONCLUIDA && app.ambiente() == PRODUCAO) {
             throw new ValidacaoException("Tarefa concluída não pode ser excluída");
@@ -85,17 +79,15 @@ public class TarefaService {
 
     public List<Tarefa> consultarTodas(String q, Pageable pageable) {
         if (StringUtils.isBlank(q)) {
-            return tarefaRepository.findAll(pageable);
+            return tarefaRepository.findAll(pageable).getContent();
         }
-        return tarefaRepository.findByNomeContainingIgnoreCase(q, pageable);
+        return tarefaRepository.findByNomeContainingIgnoreCase(q, pageable).getContent();
     }
 
     public Tarefa concluir(Long id) {
 
-        var tarefa = tarefaRepository.findById(id);
-        if (tarefa == null) {
-            throw new TarefaNaoEncontradaException("Tarefa");
-        }
+        var tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new TarefaNaoEncontradaException("Tarefa"));
 
         if (tarefa.getStatus() == CONCLUIDA) {
             throw new ValidacaoException("Tarefa já está concluída");
@@ -103,22 +95,19 @@ public class TarefaService {
 
         tarefa.setStatus(CONCLUIDA);
         tarefa.setDataAtualizacao(LocalDateTime.now());
-        return tarefa;
+        return tarefaRepository.save(tarefa);
     }
 
     public Tarefa reabrir(Long id) {
 
-        var tarefa = tarefaRepository.findById(id);
-        if (tarefa == null) {
-            throw new TarefaNaoEncontradaException("Tarefa");
-        }
+        var tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new TarefaNaoEncontradaException("Tarefa"));
 
         if (tarefa.getStatus() != CONCLUIDA) {
             throw new ValidacaoException("Tarefa não está concluída");
         }
-
         tarefa.setStatus(ABERTA);
         tarefa.setDataAtualizacao(LocalDateTime.now());
-        return tarefa;
+        return tarefaRepository.save(tarefa);
     }
 }

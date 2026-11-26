@@ -6,10 +6,12 @@ import br.com.make.turma.tarefas.exceptions.ValidacaoException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,9 +48,26 @@ public class ControllerAdvice {
                 String campo = caminho.substring(caminho.lastIndexOf('.') + 1);
                 campos.put(campo,violation.getMessage());
             }
-            var erro = new ErrorDTO(404,"Parâmetros inválidos", campos);
+            var erro = new ErrorDTO(400,"Parâmetros inválidos", campos);
         return ResponseEntity.badRequest().body(erro);
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorDTO> tratarJsonInvalido(HttpMessageNotReadableException e) {
+        return ResponseEntity.badRequest()
+                .body(new ErrorDTO(400, "JSON inválido ou malformado", null));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorDTO> tratarRotaInexistente(NoResourceFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorDTO(404, "Rota não encontrada", null));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDTO> tratarGenerico(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorDTO(500, "Erro interno do servidor", null));
+    }
 
 }
